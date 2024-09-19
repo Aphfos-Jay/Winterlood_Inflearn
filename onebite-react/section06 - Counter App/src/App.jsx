@@ -35,8 +35,6 @@ function App() {
     console.log("update");
   });
 
-  // 3. 언마운트
-
   const onClickButton = (value) => {
     setCount(count + value);
   };
