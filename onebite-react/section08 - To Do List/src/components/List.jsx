@@ -1,6 +1,6 @@
 import "./List.css";
 import ToDoItem from "./ToDoItem";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 const List = ({ todos, onUpdate, onDelete }) => {
   const [search, setSearch] = useState("");
@@ -21,9 +21,28 @@ const List = ({ todos, onUpdate, onDelete }) => {
 
   const filteredData = getFilteredDate();
 
+  /**
+   * Section10
+   * useMemo - 콜백함수의 리턴값을 그대로 반환한다.
+   * todos가 변경될때 마다 해당 함수를 실행
+   */
+  const { totalCount, doneCount, notDoneCount } = useMemo(() => {
+    console.log("getAnalyedData 호출!");
+    const totalCount = todos.length;
+    const doneCount = todos.filter((todo) => todo.isDone).length;
+    const notDoneCount = totalCount - doneCount;
+
+    return { totalCount, doneCount, notDoneCount };
+  }, [todos]);
+
   return (
     <div className="List">
       <h4>To Do List 🌱</h4>
+      <div>
+        <div>total: {totalCount}</div>
+        <div>done: {doneCount}</div>
+        <div>not done: {notDoneCount}</div>
+      </div>
       <input
         value={search}
         onChange={onChangeSearch}
