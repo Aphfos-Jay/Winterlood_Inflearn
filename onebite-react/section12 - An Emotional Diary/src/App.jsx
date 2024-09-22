@@ -4,6 +4,11 @@ import Home from "./pages/home";
 import Diary from "./pages/Diary";
 import New from "./pages/New";
 import NotFound from "./pages/NotFound";
+import getEmotionImage from "./util/get-emotion-image";
+import Button from "./components/Button";
+import Header from "./components/Header";
+
+//소수의 이미지를 쓰는경우 Assets 폴더에 있으면 좋지만 그 양이 많아지면 public에 넣는것이 좋을 수도 있음
 
 // 1. /: 모든 일기를 조회하는 Home 페이지
 // 2. /new: 새로운 일기를 작성하는 New 페이지
@@ -21,6 +26,41 @@ function App() {
   };
   return (
     <>
+      <Header
+        title={"Header"}
+        leftchild={<Button text={"Left"} />}
+        rightchild={<Button text={"Right"} />}
+      />
+      <Button
+        text={"DEFAULT"}
+        onClick={() => {
+          console.log("DEFAULT 버튼클릭");
+        }}
+      />
+
+      <Button
+        text={"POSITIVE"}
+        type={"POSITIVE"}
+        onClick={() => {
+          console.log("POSITIVE 버튼클릭");
+        }}
+      />
+
+      <Button
+        text={"NEGATIVE"}
+        type={"NEGATIVE"}
+        onClick={() => {
+          console.log("NEGATIVE 버튼클릭");
+        }}
+      />
+
+      <div>
+        <img src={getEmotionImage(1)} />
+        <img src={getEmotionImage(2)} />
+        <img src={getEmotionImage(3)} />
+        <img src={getEmotionImage(4)} />
+        <img src={getEmotionImage(5)} />
+      </div>
       <div>
         <Link to={"/"}> Home </Link> {/** Link 컴포넌트를 이용한 방식 */}
         <Link to={"/new"}> New </Link>
