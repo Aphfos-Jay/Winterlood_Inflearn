@@ -1,9 +1,11 @@
 import "./App.css";
+import { useReducer, useRef, createContext } from "react";
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import Home from "./pages/home";
 import Diary from "./pages/Diary";
 import New from "./pages/New";
 import NotFound from "./pages/NotFound";
+import Edit from "./pages/Edit";
 import getEmotionImage from "./util/get-emotion-image";
 import Button from "./components/Button";
 import Header from "./components/Header";
@@ -17,63 +19,119 @@ import Header from "./components/Header";
 // 주의1:  Routes 컴포넌트안에는 Route 컴포넌트만 넣을 수 있음
 // 주의2: Routes 컴포넌트 밖에 배치된 컴포넌트는 페이지와 상관없이 동일하게 렌더링
 
+const mockData = [
+  {
+    id: 1,
+    createdDate: new Date().getTime(),
+    emotionId: 1,
+    content: "1번 일기 내용",
+  },
+  {
+    id: 2,
+    createdDate: new Date().getTime(),
+    emotionId: 2,
+    content: "2번 일기 내용",
+  },
+];
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "CREATE":
+      return [action.data, ...state];
+    case "UPDATE":
+      return state.map((item) =>
+        String(item.id) === String(action.data.id) ? action.data : item
+      );
+    case "DELETE":
+      return state.filter((item) => String(item.id) !== String(action.id));
+    default:
+      return state;
+  }
+}
+
+const DiaryStateContext = createContext();
+const DiaryDispatchContext = createContext();
+
 function App() {
-  const nav = useNavigate(); // Navigate 함수를 이용한 방식
+  // const nav = useNavigate(); // Navigate 함수를 이용한 방식
 
   //이벤트 핸들러 이용 특정 조건에서 이동을 해야한다면 이방식
-  const onClickButton = () => {
-    nav("/new");
+  // const onClickButton = () => {
+  //   nav("/new");
+  // };
+
+  const [data, dispatch] = useReducer(reducer, mockData);
+  const idRef = useRef(3);
+
+  // 새로운 일기 추가
+  const onCreate = (createdDate, emotionId, content) => {
+    dispatch({
+      type: "CREATE",
+      data: {
+        id: idRef.current++,
+        createdDate,
+        emotionId,
+        content,
+      },
+    });
   };
+
+  // 기존의 일기 수정
+  const onUpdate = (id, createdDate, emotionId, content) => {
+    dispatch({
+      type: "UPDATE",
+      data: {
+        id,
+        createdDate,
+        emotionId,
+        content,
+      },
+    });
+  };
+
+  // 기존의 일기 삭제
+  const onDelete = (id) => {
+    dispatch({
+      type: "DELETE",
+      id,
+    });
+  };
+
   return (
     <>
-      <Header
-        title={"Header"}
-        leftchild={<Button text={"Left"} />}
-        rightchild={<Button text={"Right"} />}
-      />
-      <Button
-        text={"DEFAULT"}
+      <button
         onClick={() => {
-          console.log("DEFAULT 버튼클릭");
+          onCreate(new Date().getTime(), 1, "Hello!");
         }}
-      />
-
-      <Button
-        text={"POSITIVE"}
-        type={"POSITIVE"}
+      >
+        일기추가테스트
+      </button>
+      <button
         onClick={() => {
-          console.log("POSITIVE 버튼클릭");
+          onUpdate(1, new Date().getTime(), 3, "Hello!22 ");
         }}
-      />
-
-      <Button
-        text={"NEGATIVE"}
-        type={"NEGATIVE"}
+      >
+        일기수정테스트
+      </button>
+      <button
         onClick={() => {
-          console.log("NEGATIVE 버튼클릭");
+          onDelete(1);
         }}
-      />
-
-      <div>
-        <img src={getEmotionImage(1)} />
-        <img src={getEmotionImage(2)} />
-        <img src={getEmotionImage(3)} />
-        <img src={getEmotionImage(4)} />
-        <img src={getEmotionImage(5)} />
-      </div>
-      <div>
-        <Link to={"/"}> Home </Link> {/** Link 컴포넌트를 이용한 방식 */}
-        <Link to={"/new"}> New </Link>
-        <Link to={"/diary"}> Diary </Link>
-      </div>
-      <button onClick={onClickButton}>New 페이지로 이동</button>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/new" element={<New />} />
-        <Route path="/diary/:id" element={<Diary />} />
-        {/** path에 /:word 형태가 있으면 향후 이것은 동적경로의 URL 파라미터인 것을 의미 */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      >
+        일기삭제테스트
+      </button>
+      <DiaryStateContext.Provider value={data}>
+        <DiaryDispatchContext.Provider value={{ onCreate, onUpdate, onDelete }}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/new" element={<New />} />
+            <Route path="/diary/:id" element={<Diary />} />
+            {/** path에 /:word 형태가 있으면 향후 이것은 동적경로의 URL 파라미터인 것을 의미 */}
+            <Route path="/edit/:id" element={<Edit />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </DiaryDispatchContext.Provider>
+      </DiaryStateContext.Provider>
     </>
   );
 }
