@@ -2,12 +2,14 @@ import Header from "../components/Header";
 import Button from "../components/Button";
 import Editor from "../components/Editor";
 import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { DiaryDispatchContext } from "../App";
+import usePageTitle from "../hooks/usePageTitle";
 
 const New = () => {
   const nav = useNavigate();
   // nav(-1) 이면 페이지 뒤로가기 기능 구현
+  usePageTitle("새 일기 쓰기");
 
   const { onCreate } = useContext(DiaryDispatchContext);
   const onSubmit = (input) => {
