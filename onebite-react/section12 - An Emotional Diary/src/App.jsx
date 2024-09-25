@@ -1,7 +1,7 @@
 import "./App.css";
 import { useReducer, useRef, createContext, useEffect, useState } from "react";
 import { Routes, Route, Link, useNavigate, json } from "react-router-dom";
-import Home from "./pages/home";
+import Home from "./pages/Home";
 import Diary from "./pages/Diary";
 import New from "./pages/New";
 import NotFound from "./pages/NotFound";
